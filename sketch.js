@@ -2,7 +2,7 @@ let ima = ['one', 'two', 'three', 'four', 'five'];
 let col = ['#00ff00', '#0000ff', '#00ffff', '#ff00ff', '#ffff00', '#0ffff0', '#ff0ff0'];
 let imawin, imalose;
 let starttime, endtime; // tinh thoi gian choi
-
+let counlose;
 //Load anh de lam cac thu cac thu
 function preload() {
   imawin = loadImage('pic/phatngontwin.jpg');
@@ -119,6 +119,7 @@ function spawn() {
 }
 //hoan thanh
 function hienthi() {
+  counlose = millis();
   for (let i = 0; i < size; i++) {
     for (let j = 0; j < size; j++) {
       da_chon[i][j] = 0;
@@ -266,7 +267,11 @@ function draw() {
     textAlign(LEFT,TOP);
     text('You win. Time: ' + int((endtime-starttime)/1000) + ' s',10,10);
   }else if(tt == 'lose'){
+    if(millis() - counlose < 2000) return;
     image(imalose,0,0,600,400);
+    textSize(20);
+    fill('#00ff00');
+    textAlign(LEFT,TOP);
     text('You lose. Gà!!!!!!!',10,10);
   }else{
     //Hien thoi gian choi
