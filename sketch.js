@@ -1,27 +1,33 @@
-let ima;
-let col = ['#00ff00', '#0000ff', '#00ffff', '#ffff00', '#ff00ff'];
+let ima = ['one', 'two', 'three', 'four', 'five'];
+let col = ['#00ff00', '#0000ff', '#00ffff', '#ff00ff', '#ffff00', '#0ffff0', '#ff0ff0'];
+let imawin, imalose;
+let starttime, endtime; // tinh thoi gian choi
 
+//Load anh de lam cac thu cac thu
 function preload() {
-  ima = [0];
-  ima.push(loadImage('Pic/0.jpg'));
-           ima.push(loadImage('Pic/2.jpg'));
-  ima.push(loadImage('Pic/3.jpg'));
-  ima.push(loadImage('Pic/4.jpg'));
-  ima.push(loadImage('Pic/1.jpg'));
+  imawin = loadImage('pic/phatngontwin.jpg');
+  imalose = loadImage('pic/phatngon.jpg');
+  for (let i = 0; i < 5; i++) {
+    let tmp = 'pic/' + ima[i] + '.jpg';
+    ima[i] = loadImage(tmp);
+  }
 }
+
 let board = [],
   size = 8,
   coun = 0,
   cnt = 0,
-  limit = 5;
-let blaced, da_chon, thutu, dc = 0,
-  tt = 0;
+  limit = 5,
+  tt = '';
+let blaced, da_chon, thutu, dc = 0;
 let isWin, chose;
-let coun_hang = [],
-  coun_cot = [],
-  coun_ans;
+let coun_hang = [], // coun_hang(i,j) : dem so lan xuat hien so j o hang i
+  coun_cot = [], // coun_cot(i,j) : dem so lan xuat hien so j o cot i
+  coun_ans; // so hang sai va so cot sai
+
 // duoi day la ham spawn random
 function spawn() {
+  starttime = millis();
   tt = '';
   dc = 0;
   board = [];
@@ -45,7 +51,8 @@ function spawn() {
       coun_cot[i].push(0);
     }
   }
-
+  
+  // Random cac o sai
   for (let i = 0; i < limit; i++) {
     x = int(random(0, size - 0.0001));
     y = int(random(0, size - 0.0001));
@@ -63,55 +70,47 @@ function spawn() {
   }
 
   thutu = shuffle(thutu);
-
+  
+  // Sinh board dung truoc voi cac o khong phai o sai
   for (let i of thutu) {
     for (let j = 1; j < 2 * size; j++) {
-      if (coun_hang[i[0]][j] == 0 && coun_cot[i[1]][j] == 0) {
-        coun_hang[i[0]][j] = 1;
-        coun_cot[i[1]][j] = 1;
+      if (coun_hang[i[1]][j] == 0 && coun_cot[i[0]][j] == 0) {
+        coun_hang[i[1]][j]++;
+        coun_cot[i[0]][j]++;
         board[i[0]][i[1]] = j;
-
         break;
       }
     }
   }
-  // for(let i = 0; i < size; i++){
-  //   for(let j = 0; j < size; j++){
-  //     if(blaced[x][y] == 1){
-  //       for(let k = 1; k < 2*size; k++){
-  //         if(coun_hang[i][k] == 1 || coun_cot[j][k] == 1){
-  //           coun_hang[i][k]++;
-  //           coun_cot[j][k]++;
-  //           board[i][j] = k;
-  //           break;
-  //        }
-  //       }
-  //     }
-  //   }
-  // }
+  
   coun_ans = 0;
   chose = [];
+  // Danh sach cac so co the chon
   for (let i = 1; i < size * 2; i++) {
     chose.push(i);
   }
+  
+  //Bat dau random
   for (let i = 0; i < size; i++) {
     for (let j = 0; j < size; j++) {
       if (board[i][j] == 0) {
         chose = shuffle(chose);
         for (let k of chose) {
-          if (coun_hang[i][k] >= 1 || coun_cot[j][k] >= 1) {
-            coun_hang[i][k]++;
+          if (coun_hang[j][k] == 1 || coun_cot[i][k] == 1) {
+            coun_hang[j][k]++;
 
-            coun_cot[j][k]++;
-            if (coun_hang[i][k] == 2) {
+            coun_cot[i][k]++;
+            if (coun_hang[j][k] == 2) {
               coun_ans++;
             }
-            if (coun_cot[j][k] == 2) {
+            if (coun_cot[i][k] == 2) {
               coun_ans++;
             }
             board[i][j] = k;
+            // console.log(j + ' ' + i + ' ' + coun_hang[j][k] + ' ' + coun_cot[i][k]);
             break;
           }
+
         }
       }
     }
@@ -123,121 +122,118 @@ function hienthi() {
   for (let i = 0; i < size; i++) {
     for (let j = 0; j < size; j++) {
       da_chon[i][j] = 0;
-      if (blaced[i][j] == 1) {
+      if (blaced[i][j] == 1) { // blaced(i,j)==1 neu la 1 trong nhung o duoc chon lam o sai ban dau
         da_chon[i][j] = 1;
       }
     }
   }
+  tt = 'lose';
   dc = limit;
   coun_ans = 0;
-  if (tt != 'win') {
-    tt = 'lose';
-
-  }
 }
 
-function ez() {
+function ez() { //Easy
   size = 5;
   limit = 5;
   spawn();
 }
 
-function me() {
+function med() { // Medium
   size = 8;
   limit = 10;
   spawn();
 }
 
-function ha() {
+function hard() { //Hard
   size = 10;
   limit = 15;
   spawn();
 }
-let sizein, limitin;
 
+let sizein, limitin; // Custom
 function cus() {
-  size = min(12, int(sizein.value()));
-  limit = min(int(size * size / 5), int(limitin.value()));
+  size = min(12,sizein.value());
+  limit = min(int(size*size/3),limitin.value());
   spawn();
 }
 
+function hamrieng(){ // Introduction
+  if(tt != 'introduction'){
+    tt = 'introduction';
+  }else{
+    spawn();
+  }
+}
+
 function setup() {
-  createCanvas(800, 600);
-  let solution = createButton('Solution :(');
-  let easy = createButton('Easy')
-  let medium = createButton('Medium');
-  let hard = createButton('Hard');
-  let custom = createButton('Custom');
+  createCanvas(900, 700);
+  // Tao cac button lua chon muc do
+  let intro = createButton('introduction');
+  let solution = createButton('solution :(');
+  let easy = createButton('easy');
+  let inter = createButton('intermediate');
+  let har = createButton('hard');
+  let custom = createButton('custom');
   sizein = createInput();
   limitin = createInput();
-  solution.position(665, 50);
-  easy.position(665, 90);
-  medium.position(665, 110);
-  hard.position(665, 130);
-  custom.position(665, 200);
-  sizein.position(665, 155);
-  limitin.position(665, 175);
-  solution.size(60,40);
-  easy.size(60,20);
-  medium.size(60,20);
-  hard.size(60,20);
-  custom.size(60,20);
-  sizein.size(55,15);
-  limitin.size(55,15);
+  intro.position(660, 10);
+  intro.size(100,20);
+  intro.mousePressed(hamrieng);
+  solution.position(660, 50);
+  solution.size(100,20);
   solution.mousePressed(hienthi);
+  easy.position(660, 85);
+  easy.size(100,20);
   easy.mousePressed(ez);
-  medium.mousePressed(me);
-  hard.mousePressed(ha);
+  inter.position(660, 110);
+  inter.size(100,20);
+  inter.mousePressed(med);
+  har.position(660, 135);
+  har.size(100,20);
+  har.mousePressed(hard);
+  sizein.position(660,190);
+  sizein.size(100,15);
+  limitin.size(100,15);
+  limitin.position(660,215);
+  custom.position(660, 240);
+  custom.size(100,20);
   custom.mousePressed(cus);
   ez();
 }
 
 function layer1() {
-  textSize(30);
-  if (tt == 'win') {
-    textSize(30);
-    text('You win!', 415, 15);
-  }
-  if (tt == 'lose') {
-    textSize(30);
-    text('You lose!', 415, 15);
-  }
+  //cute board here
   textSize(14);
-  textAlign(LEFT);
-  noStroke();
-  text('Size: ', 605, 165);
-  text('So buoc: ', 605, 185);
+  textAlign(LEFT,CENTER);
+  fill('black');
+  text('Size: ',620,190,50,25);
+  text('Lượt: ',620,215,50,25);
   for (let i = 0; i < size; i++) {
     for (let j = 0; j < size; j++) {
-      
-      if (board[j][i] < 5) {
-        image(ima[board[j][i]], i * 50, j * 50 + 50, 50, 50);
-      } else if (board[j][i] < 9) {
-        stroke('black');
+      if (board[j][i] <= 5) {
+        image(ima[board[j][i] - 1], j * 50, i * 50 + 50, 50, 50);
+      } else if (board[j][i] <= 8) {
         fill(col[board[j][i] - 5]);
-        rect(i * 50, j * 50 + 50, 50, 50);
-        fill('black');
+        square(j * 50, i * 50 + 50, 50);
       } else {
-        noFill();
-        stroke('black');
-        square(i*50,j*50+50,50);
-        fill('black');
-        textAlign(CENTER,CENTER);
+        fill('white');
+        square(j * 50, i * 50 + 50, 50);
         textSize(30);
-        text(board[j][i] - 8, i * 50, j * 50 + 50, 50, 50);
-        textSize(14);
+        textAlign(CENTER, CENTER);
+        fill('black');
+        text(board[j][i] - 8, j * 50, i * 50 + 50, 50, 50);
       }
-      if (da_chon[i][j] == 1) {
-        stroke('red');
-        strokeWeight(4);
+      if (da_chon[j][i] > 0) {
         noFill();
-        square(i * 50, j * 50 + 50, 50);
-        line(i*50,j*50+50,i*50+50,j*50+100);
-        line(i*50+50,j*50+50,i*50,j*50+100);
+        strokeWeight(3);
+        stroke('red');
+        square(j * 50, i * 50 + 50, 50);
+        line(j * 50, i * 50 + 50, j * 50 + 50, i * 50 + 100);
+        line(j * 50 + 50, i * 50 + 50, j * 50, i * 50 + 100);
         strokeWeight(1);
         stroke('black');
         fill('black');
-      }
+      } 
     }
   }
 }
@@ -247,43 +243,64 @@ function draw() {
   layer1();
   // textAlign(LEFT,TOP);
   // text(thutu,10,510,500,500);
-  // text(coun_ans, 315, 15);
+  // text(coun_ans, 515, 15);
+  textAlign(LEFT);
   textSize(30);
-  textAlign(LEFT,CENTER);
-  text('Ban con ' + (limit - dc) + ' luot', 15, 15);
-  if (coun_ans == 0 && tt == '') {
+  fill('black');
+  text('Bạn còn ' + (limit - dc) + ' lượt !!!!',10,25);
+  if(coun_ans == 0 && tt == ''){
     tt = 'win';
+    endtime = millis();
+  }
+  if(tt == 'introduction'){ //Introduction
+    fill('white');
+    rect(0,0,600,700);
+    fill('black');
+    textAlign(LEFT,TOP);
+    textSize(20);
+    text('Phùng Xuân Nhạ là nhân vật nổi tiếng trong lòng con dân đất Việt. Gần đây ông phải tham dự rất nhiều buổi họp báo. Ông đương nhiên không thể dự hết các buổi họp báo này nên đã tạo ra các phân thân để dự họp báo. Trong n ngày liên tiếp, mỗi ngày có n cuộc họp, tại n địa điểm như nhau, vì không khôn cho lắm nên phân thân của ông nhận việc rất ngu. Trong một ngày một phân thân không thể tham gia hơn một cuộc họp, một phân thân cũng không xuất hiện tại một địa điểm hai lần để tránh tạo ra sự chán nản cho người dự.\n\t Vì bạn thông minh hơn họ, hãy bỏ bớt tối đa x cuộc họp để thỏa mãn điều kiện trên, tránh tiếng xấu cho Nhạ.\n\n P/S: mỗi hàng trong bảng là 1 ngày, mỗi cột là 1 địa điểm.\n\tsize chỉ hoạt động từ 3 - 12\n\tsố lượt tối đa bằng 1/3 số cuộc họp',10,10,580,680);
+  }else if(tt == 'win'){
+    image(imawin,0,0,600,400);
+    textSize(20);
+    fill('#00ff00');
+    textAlign(LEFT,TOP);
+    text('You win. Time: ' + int((endtime-starttime)/1000) + ' s',10,10);
+  }else if(tt == 'lose'){
+    image(imalose,0,0,600,400);
+    text('You lose. Gà!!!!!!!',10,10);
+  }else{
+    //Hien thoi gian choi
+    text('Time: ' + int((millis()-starttime)/1000) + ' s',400, 25); 
   }
 }
 
 function mousePressed() {
-  if (tt != '') {
-    return;
-  }
+  if(tt != '') return;
   if (mouseX >= 50 * size || mouseY >= 50 * size + 50 || mouseY < 50) return;
   var i = Math.floor((mouseY - 50) / 50);
   var j = Math.floor(mouseX / 50);
+  // console.log(size + ' ' + limit + ' ' + mouseX + ' ' + mouseY + ' ' + i + ' ' + j);
   if (da_chon[j][i] == 0) {
     if (dc >= limit) return;
     da_chon[j][i] = 1;
-    if (coun_cot[j][board[i][j]] == 2) {
+    if (coun_cot[j][board[j][i]] == 2) {
       coun_ans--;
     }
-    if (coun_hang[i][board[i][j]] == 2) {
+    if (coun_hang[i][board[j][i]] == 2) {
       coun_ans--;
     }
-    coun_cot[j][board[i][j]]--;
-    coun_hang[i][board[i][j]]--;
+    coun_cot[j][board[j][i]]--;
+    coun_hang[i][board[j][i]]--;
 
     dc++;
   } else {
     da_chon[j][i] = 0;
-    coun_cot[j][board[i][j]]++;
-    coun_hang[i][board[i][j]]++;
-    if (coun_cot[j][board[i][j]] == 2) {
+    coun_cot[j][board[j][i]]++;
+    coun_hang[i][board[j][i]]++;
+    if (coun_cot[j][board[j][i]] == 2) {
       coun_ans++;
     }
-    if (coun_hang[i][board[i][j]] == 2) {
+    if (coun_hang[i][board[j][i]] == 2) {
       coun_ans++;
     }
     dc--;
