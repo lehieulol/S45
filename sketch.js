@@ -1,10 +1,16 @@
 let ima = ['one', 'two', 'three', 'four', 'five'];
 let col = ['#00ff00', '#0000ff', '#00ffff', '#ff00ff', '#ffff00', '#0ffff0', '#ff0ff0'];
-let imawin, imalose;
+let imawin, imalose, bualiem, de, thuong, kho, sandbox;
 let starttime, endtime; // tinh thoi gian choi
 let counlose;
+let size_p_o;
 //Load anh de lam cac thu cac thu
 function preload() {
+  de = loadImage('pic/easy.jpg');
+  thuong = loadImage('pic/med.jpg');
+  kho = loadImage('pic/hard.jpg');
+  sandbox = loadImage('pic/Sandbox.png');
+  bualiem = loadImage('pic/bua liem.png');
   imawin = loadImage('pic/phatngontwin.jpg');
   imalose = loadImage('pic/phatngon.jpg');
   for (let i = 0; i < 5; i++) {
@@ -27,6 +33,7 @@ let coun_hang = [], // coun_hang(i,j) : dem so lan xuat hien so j o hang i
 
 // duoi day la ham spawn random
 function spawn() {
+  size_p_o = 600 / size;
   starttime = millis();
   tt = '';
   dc = 0;
@@ -51,7 +58,7 @@ function spawn() {
       coun_cot[i].push(0);
     }
   }
-  
+
   // Random cac o sai
   for (let i = 0; i < limit; i++) {
     x = int(random(0, size - 0.0001));
@@ -70,7 +77,7 @@ function spawn() {
   }
 
   thutu = shuffle(thutu);
-  
+
   // Sinh board dung truoc voi cac o khong phai o sai
   for (let i of thutu) {
     for (let j = 1; j < 2 * size; j++) {
@@ -82,14 +89,14 @@ function spawn() {
       }
     }
   }
-  
+
   coun_ans = 0;
   chose = [];
   // Danh sach cac so co the chon
   for (let i = 1; i < size * 2; i++) {
     chose.push(i);
   }
-  
+
   //Bat dau random
   for (let i = 0; i < size; i++) {
     for (let j = 0; j < size; j++) {
@@ -153,15 +160,15 @@ function hard() { //Hard
 
 let sizein, limitin; // Custom
 function cus() {
-  size = min(12,sizein.value());
-  limit = min(int(size*size/3),limitin.value());
+  size = min(12, sizein.value());
+  limit = min(int(size * size / 3), limitin.value());
   spawn();
 }
 
-function hamrieng(){ // Introduction
-  if(tt != 'introduction'){
+function hamrieng() { // Introduction
+  if (tt != 'introduction') {
     tt = 'introduction';
-  }else{
+  } else {
     spawn();
   }
 }
@@ -169,78 +176,78 @@ function hamrieng(){ // Introduction
 function setup() {
   createCanvas(900, 700);
   // Tao cac button lua chon muc do
-  let intro = createButton('introduction');
-  let solution = createButton('solution :(');
-  let easy = createButton('easy');
-  let inter = createButton('intermediate');
-  let har = createButton('hard');
-  let custom = createButton('custom');
+  let intro = createButton('INTRODUCTION');
+  let solution = createButton('SOLUTION :(');
+  let easy = createButton('EASY');
+  let inter = createButton('INTERMEDIATE');
+  let har = createButton('HARD');
+  let custom = createButton('CUSTOM');
   sizein = createInput();
   limitin = createInput();
   intro.position(660, 10);
-  intro.size(100,20);
+  intro.size(150, 20);
   intro.mousePressed(hamrieng);
   solution.position(660, 50);
-  solution.size(100,20);
+  solution.size(150, 20);
   solution.mousePressed(hienthi);
-  easy.position(660, 85);
-  easy.size(100,20);
+  easy.position(660, 185);
+  easy.size(150, 20);
   easy.mousePressed(ez);
-  inter.position(660, 110);
-  inter.size(100,20);
+  inter.position(660, 310);
+  inter.size(150, 20);
   inter.mousePressed(med);
-  har.position(660, 135);
-  har.size(100,20);
+  har.position(660, 435);
+  har.size(150, 20);
   har.mousePressed(hard);
-  sizein.position(660,190);
-  sizein.size(100,15);
-  limitin.size(100,15);
-  limitin.position(660,215);
-  custom.position(660, 240);
-  custom.size(100,20);
+  sizein.position(660, 590);
+  sizein.size(150, 15);
+  limitin.size(150, 15);
+  limitin.position(660, 615);
+  custom.position(660, 640);
+  custom.size(150, 20);
   custom.mousePressed(cus);
   ez();
 }
 
 function layer1() {
   //cute board here
-  textSize(14);
-  textAlign(LEFT,CENTER);
-  fill('black');
-  text('Size: ',620,190,50,25);
-  text('Lượt: ',620,215,50,25);
+
   for (let i = 0; i < size; i++) {
     for (let j = 0; j < size; j++) {
       if (board[j][i] <= 5) {
-        image(ima[board[j][i] - 1], j * 50, i * 50 + 50, 50, 50);
+        image(ima[board[j][i] - 1], j * size_p_o, i * size_p_o + 50, size_p_o, size_p_o);
       } else if (board[j][i] <= 8) {
         fill(col[board[j][i] - 5]);
-        square(j * 50, i * 50 + 50, 50);
+        square(j * size_p_o, i * size_p_o + 50, size_p_o);
       } else {
         fill('white');
-        square(j * 50, i * 50 + 50, 50);
+        square(j * size_p_o, i * size_p_o + 50, size_p_o);
         textSize(30);
         textAlign(CENTER, CENTER);
         fill('black');
-        text(board[j][i] - 8, j * 50, i * 50 + 50, 50, 50);
+        text(board[j][i] - 8, j * size_p_o, i * size_p_o + 50, size_p_o, size_p_o);
       }
       if (da_chon[j][i] > 0) {
         noFill();
         strokeWeight(3);
         stroke('red');
-        square(j * 50, i * 50 + 50, 50);
-        line(j * 50, i * 50 + 50, j * 50 + 50, i * 50 + 100);
-        line(j * 50 + 50, i * 50 + 50, j * 50, i * 50 + 100);
+        square(j * size_p_o, i * size_p_o + 50, size_p_o);
+        line(j * size_p_o, i * size_p_o + 50, j * size_p_o + size_p_o, i * size_p_o + size_p_o + 50);
+        line(j * size_p_o + size_p_o, i * size_p_o + 50, j * size_p_o, i * size_p_o + size_p_o + 50);
         strokeWeight(1);
         stroke('black');
         fill('black');
-      } 
+      }
     }
   }
 }
 
 function draw() {
   background(255);
+  fill(123, 97, 74);
+  rect(0, 0, 900, 700);
+  fill(122);
+  rect(605,0,295,700);
   layer1();
   // textAlign(LEFT,TOP);
   // text(thutu,10,510,500,500);
@@ -248,42 +255,71 @@ function draw() {
   textAlign(LEFT);
   textSize(30);
   fill('black');
-  text('Bạn còn ' + (limit - dc) + ' lượt !!!!',10,25);
-  if(coun_ans == 0 && tt == ''){
+  text('Bạn còn ' + (limit - dc) + ' lượt !!!!', 10, 25);
+  if (coun_ans == 0 && tt == '') {
     tt = 'win';
     endtime = millis();
   }
-  if(tt == 'introduction'){ //Introduction
+  textSize(14);
+  textAlign(LEFT, CENTER);
+  fill('black');
+  text('Size: ', 620, 590, 50, 25);
+  text('Lượt: ', 620, 615, 50, 25);
+  if (tt == 'introduction') { //Introduction
     fill('white');
-    rect(0,0,600,700);
+    rect(0, 0, 600, 700);
     fill('black');
-    textAlign(LEFT,TOP);
+    textAlign(LEFT, TOP);
     textSize(20);
-    text('Phùng Xuân Nhạ là nhân vật nổi tiếng trong lòng con dân đất Việt. Gần đây ông phải tham dự rất nhiều buổi họp báo. Ông đương nhiên không thể dự hết các buổi họp báo này nên đã tạo ra các phân thân để dự họp báo. Trong n ngày liên tiếp, mỗi ngày có n cuộc họp, tại n địa điểm như nhau, vì không khôn cho lắm nên phân thân của ông nhận việc rất ngu. Trong một ngày một phân thân không thể tham gia hơn một cuộc họp, một phân thân cũng không xuất hiện tại một địa điểm hai lần để tránh tạo ra sự chán nản cho người dự.\n\t Vì bạn thông minh hơn họ, hãy bỏ bớt tối đa x cuộc họp để thỏa mãn điều kiện trên, tránh tiếng xấu cho Nhạ.\n\n P/S: mỗi hàng trong bảng là 1 ngày, mỗi cột là 1 địa điểm.\n\tsize chỉ hoạt động từ 3 - 12\n\tsố lượt tối đa bằng 1/3 số cuộc họp',10,10,580,680);
-  }else if(tt == 'win'){
-    image(imawin,0,0,600,400);
-    textSize(20);
+    text('Phùng Xuân Nhạ là nhân vật nổi tiếng trong lòng con dân đất Việt. Gần đây ông phải tham dự rất nhiều buổi họp báo. Ông đương nhiên không thể dự hết các buổi họp báo này nên đã tạo ra các phân thân để dự họp báo. Trong n ngày liên tiếp, mỗi ngày có n cuộc họp, tại n địa điểm như nhau, vì không khôn cho lắm nên phân thân của ông nhận việc rất ngu. Trong một ngày một phân thân không thể tham gia hơn một cuộc họp, một phân thân cũng không xuất hiện tại một địa điểm hai lần để tránh tạo ra sự chán nản cho người dự.\n\t Vì bạn thông minh hơn họ, hãy bỏ bớt tối đa x cuộc họp để thỏa mãn điều kiện trên, tránh tiếng xấu cho Nhạ.\n\n P/S: mỗi hàng trong bảng là 1 ngày, mỗi cột là 1 địa điểm.\n\tsize chỉ hoạt động từ 3 - 12\n\tsố lượt tối đa bằng 1/3 số cuộc họp', 10, 10, 580, 680);
+  } else if (tt == 'win') {
+    if(millis() - endtime < 2000){
+      return;
+    }
+    fill(123, 97, 74);
+    rect(0, 0, 900, 700);
+    textSize(14);
+    textAlign(LEFT, CENTER);
+    fill('black');
+    text('Size: ', 620, 190, 50, 25);
+    text('Lượt: ', 620, 215, 50, 25);
+    image(imawin, 0, 0, 600, 400);
+    textSize(90);
     fill('#00ff00');
-    textAlign(LEFT,TOP);
-    text('You win. Time: ' + int((endtime-starttime)/1000) + ' s',10,10);
-  }else if(tt == 'lose'){
-    if(millis() - counlose < 2000) return;
-    image(imalose,0,0,600,400);
-    textSize(20);
+    textAlign(LEFT, TOP);
+    text('You win. Time: ' + int((endtime - starttime) / 1000) + ' s', 10, 500);
+  } else if (tt == 'lose') {
+    if (millis() - counlose < 2000) return;
+    fill(123, 97, 74);
+    rect(0, 0, 900, 700);
+    textSize(14);
+    textAlign(LEFT, CENTER);
+    fill('black');
+    text('Size: ', 620, 190, 50, 25);
+    text('Lượt: ', 620, 215, 50, 25);
+    image(imalose, 0, 0, 600, 400);
+    textSize(100);
     fill('#00ff00');
-    textAlign(LEFT,TOP);
-    text('You lose. Gà!!!!!!!',10,10);
-  }else{
+    textAlign(LEFT, TOP);
+    text('You lose. Gà!!!!!!!', 10, 500);
+  } else {
     //Hien thoi gian choi
-    text('Time: ' + int((millis()-starttime)/1000) + ' s',400, 25); 
+    text('Time: ' + int((millis() - starttime) / 1000) + ' s', 400, 25);
   }
+  tint(80,80,80,120);
+  image(bualiem,0,50,600,600);
+  noTint();
+  image(de,660,85,150,100);
+  image(thuong,660,210,150,100);
+  image(kho,660,335,150,100);
+  image(sandbox,660,480,150,100);
 }
 
 function mousePressed() {
-  if(tt != '') return;
-  if (mouseX >= 50 * size || mouseY >= 50 * size + 50 || mouseY < 50) return;
-  var i = Math.floor((mouseY - 50) / 50);
-  var j = Math.floor(mouseX / 50);
+  if (tt != '') return;
+  if (mouseX >= 600 || mouseY >= 650 || mouseY < 50) return;
+  var i = Math.floor((mouseY - 50) / size_p_o);
+  var j = Math.floor(mouseX / size_p_o);
   // console.log(size + ' ' + limit + ' ' + mouseX + ' ' + mouseY + ' ' + i + ' ' + j);
   if (da_chon[j][i] == 0) {
     if (dc >= limit) return;
